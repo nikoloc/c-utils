@@ -1,21 +1,21 @@
 #include "array.h"
 
-#include <assert.h>
 #include <stdio.h>
 
-define_array(int, int);
-define_array(float, float);
+define_array(int, int_array);
+define_array(float, float_array);
 
 struct user {
     char *name;
     char *password;
 };
 
-define_array(struct user, user);
+define_array(struct user, user_array);
 
 int
 main(int argc, char **argv) {
-    int_array a = {0};
+    int_array_t a;
+    int_array_init(&a, 0, NULL);
 
     int_array_insert(&a, 0, 100);
 
@@ -31,11 +31,12 @@ main(int argc, char **argv) {
         printf("a[%d] = %d\n", i, a.data[i]);
     }
 
-    int_array_destroy(&a);
+    int_array_deinit(&a);
 
     printf("\n");
 
-    float_array f = {0};
+    float_array_t f;
+    float_array_init(&f, 5, (float[]){0.0, 1.0, 2.0, 3.0, 4.0});
 
     float_array_insert(&f, 0, 100.0);
 
@@ -45,13 +46,13 @@ main(int argc, char **argv) {
     float_array_push(&f, 3.0);
 
     float_array_insert(&f, 2, 4.0);
-    float_array_remove(&f, 3.0);
+    float_array_remove(&f, 3);
 
-    for(int i = 0; i < a.len; i++) {
+    for(int i = 0; i < f.len; i++) {
         printf("f[%d] = %.2f\n", i, f.data[i]);
     }
 
-    float_array_destroy(&f);
+    float_array_deinit(&f);
 
     return 0;
 }

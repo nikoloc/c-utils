@@ -1,63 +1,108 @@
+// clang-format off
+#include "array.h"
+#define STRING_DEFAULT_CAP 4
 #include "dynamic_string.h"
+// clang-format on
 
 #include <stdio.h>
 
 int
 main(void) {
-    string s;
+    string_t s;
     string_init(&s, NULL);
 
     char *test = "this is a testing string";
-    for(char *p = test; *p != 0; p++)
+    for(char *p = test; *p; p++) {
         string_append(&s, *p);
+    }
 
-    printf("string after copying = `%s`\n", string_c_string_view(&s));
+    assert(string_equal_c_string(&s, "this is a testing string"));
+    assert(s.len == 24);
+    assert(strlen(string_c_string_view(&s)) == 24);
 
     string_append_c_string(&s, ", and another one");
-    printf("string after appending = `%s`\n", string_c_string_view(&s));
+    assert(string_equal_c_string(&s, "this is a testing string, and another one"));
 
     // 0-initialized struct is a valid string, so you dont have to call `string_init()` on calloced struct members for
     // example
-    string clone = {0};
+    string_t clone = {0};
     string_clone(&clone, &s);
-    printf("cloned string = `%s`\n", string_c_string_view(&clone));
+    assert(string_equal(&clone, &s));
+    assert(clone.len == s.len);
     string_deinit(&clone);
 
-    string clone2;
+    string_t clone2;
     // we can clone even in a already used string
     string_init(&clone2, "this is going to be overriden");
     string_clone(&clone2, &s);
-    printf("cloned inited string = `%s`\n", string_c_string_view(&clone2));
+    assert(string_equal(&clone2, &s));
+    assert(clone2.len == s.len);
     string_deinit(&clone2);
 
-    string substring = {0};
+    string_t substring = {0};
     string_init(&substring, "this substring has a initial value");
     string_substring(&substring, &s, 10, 17);
-    printf("substring(10, 17) = `%s`\n", string_c_string_view(&substring));
+    assert(string_equal_c_string(&substring, "testing"));
     string_deinit(&substring);
 
     string_assign(&s, "new value for this string");
-    printf("after assignment = `%s`\n", string_c_string_view(&s));
+    assert(string_equal_c_string(&s, "new value for this string"));
+    assert(s.len == 25);
+
+    // todo: fix this example
+    int test_index = 0;
+
+    string_assign(&s, "find , and . and the last , and also the period.");
+    int first_comma = string_index_of(&s, ',');
+    assert(first_comma == 5);
+
+    int last_comma = string_index_of_reverse(&s, ',');
+    assert(last_comma == 26);
+
+    int test_count = 0;
+    int expect[] = {5, 11, 26, 47};
+
+    char sep;
+    int period_comma = -1;
+    while((period_comma = string_index_of_any_from(&s, ".,", &sep, period_comma + 1)) != -1) {
+        assert(period_comma == expect[test_count]);
+        test_count++;
+    }
 
     string_deinit(&s);
 
-    string parse;
-    string_init(&parse, "parse on spaces,commas and/front slash");
+    string_t parse;
+    string_init(&parse, "parse just on spaces now");
+    char *expect1[] = {"parse", "just", "on", "spaces", "now"};
 
-    char sep;
-    int index = -1;
-    while(index != parse.len) {
-        int next = string_index_of_any_from(&parse, " ,/", &sep, index + 1);
-        if(next == -1)
-            next = parse.len;
-
-        string part = {0};
-        string_substring(&part, &parse, index + 1, next);
-        printf("`%s`, sep=%c\n", string_c_string_view(&part), sep);
-        string_deinit(&part);
-
-        index = next;
+    string_array_t arr = {0};
+    string_split(&parse, ' ', false, &arr);
+    assert(arr.len == 5);
+    for(int i = 0; i < 5; i++) {
+        assert(string_equal_c_string(&arr.data[i], expect1[i]));
+        string_deinit(&arr.data[i]);
     }
 
+    string_assign(&parse, "parse      just      on spaces        now but       with      multiple     ");
+    char *expect2[] = {"parse", "just", "on", "spaces", "now", "but", "with", "multiple"};
+
+    string_split(&parse, ' ', true, &arr);
+    assert(arr.len == 8);
+    for(int i = 0; i < 8; i++) {
+        assert(string_equal_c_string(&arr.data[i], expect2[i]));
+        string_deinit(&arr.data[i]);
+    }
+
+    // todo: fix the example
+    // string_assign(&parse, "parse shell      like \"string     with spaces\"      and \"esca\\\"ping\"");
+    // string_shell_split(&parse, &arr);
+    // for(string_t *iter = arr.data; iter < string_array_end(&arr); iter++) {
+    //     printf("`%s`\n", string_c_string_view(iter));
+    //     string_deinit(iter);
+    // }
+    //
+    string_array_deinit(&arr);
     string_deinit(&parse);
+
+    return 0;
 }

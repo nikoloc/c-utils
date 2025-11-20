@@ -1,4 +1,5 @@
-#pragma once
+#ifndef VEC3_H
+#define VEC3_H
 
 #include <assert.h>
 #include <math.h>
@@ -160,3 +161,5 @@ mat3_mul_vec3(mat3 a, vec3 v) {
             a.m[2][0] * v.x + a.m[2][1] * v.y + a.m[2][2] * v.z,
     };
 }
+
+#endif

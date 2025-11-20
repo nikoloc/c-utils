@@ -1,4 +1,5 @@
-#pragma once
+#ifndef VEC2_H
+#define VEC2_H
 
 #include <assert.h>
 #include <math.h>
@@ -105,3 +106,5 @@ static inline vec2
 mat2_mul_vec2(mat2 a, vec2 v) {
     return (vec2){a.m[0][0] * v.x + a.m[0][1] * v.y, a.m[1][0] * v.x + a.m[1][1] * v.y};
 }
+
+#endif
