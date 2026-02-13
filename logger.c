@@ -1,33 +1,3 @@
-#ifndef LOGGER_H
-#define LOGGER_H
-
-#include <stdbool.h>
-#include <stdio.h>
-#include <time.h>
-#include <unistd.h>
-
-enum log_level {
-    LOG_LEVEL_DEBUG = 0,
-    LOG_LEVEL_INFO = 1,
-    LOG_LEVEL_WARN = 2,
-    LOG_LEVEL_ERROR = 3,
-};
-
-void
-logger_init(enum log_level level, bool enable_colors);
-
-void
-logger_log(enum log_level level, char *file, int line, char *fmt, ...);
-
-#define log_debug(...) logger_log(LOG_LEVEL_DEBUG, __FILE__, __LINE__, __VA_ARGS__)
-#define log_info(...) logger_log(LOG_LEVEL_INFO, __FILE__, __LINE__, __VA_ARGS__)
-#define log_warn(...) logger_log(LOG_LEVEL_WARN, __FILE__, __LINE__, __VA_ARGS__)
-#define log_error(...) logger_log(LOG_LEVEL_ERROR, __FILE__, __LINE__, __VA_ARGS__)
-
-#endif
-
-#ifdef LOGGER_IMPLEMENTATION
-
 #include <stdarg.h>
 #include <string.h>
 
@@ -59,9 +29,13 @@ static const char *colors[] = {
 };
 
 void
-logger_init(enum log_level level, bool enable_colors) {
+logger_set_level(enum log_level level) {
     g.level = level;
-    g.enable_colors = enable_colors;
+}
+
+void
+logger_set_colors(bool enable) {
+    g.enable_colors = enable;
 }
 
 static char *
@@ -84,13 +58,13 @@ logger_log(enum log_level level, char *file, int line, char *fmt, ...) {
         return;
     }
 
-    fprintf(stderr, "[%s:%d] ", get_filename(file), line);
-
     if(g.enable_colors && isatty(STDERR_FILENO)) {
-        fprintf(stderr, "%s%s%s ", colors[level], names[level], COLOR_RESET);
+        fprintf(stderr, "%s%-5s%s ", colors[level], names[level], COLOR_RESET);
     } else {
-        fprintf(stderr, "%s ", names[level]);
+        fprintf(stderr, "%-5s ", names[level]);
     }
+
+    fprintf(stderr, "[%s:%d] ", get_filename(file), line);
 
     va_list args;
     va_start(args, fmt);
@@ -100,5 +74,3 @@ logger_log(enum log_level level, char *file, int line, char *fmt, ...) {
     fprintf(stderr, "\n");
     fflush(stderr);
 }
-
-#endif

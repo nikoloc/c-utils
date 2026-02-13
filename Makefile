@@ -17,6 +17,9 @@ build/reader: reader_test.c reader.h build
 build/memory: memory_test.c memory.h build
 	$(CC) $< $(CFLAGS) -o $@
 
+build/logger: logger_test.c logger.h build
+	$(CC) $< $(CFLAGS) -o $@
+
 test_array: build/array
 	$<
 
@@ -32,12 +35,13 @@ test_reader: build/reader
 test_memory: build/memory
 	$<
 
-test: test_array test_list test_string test_reader test_memory
+test_logger: build/logger
+	$<
+
+test: test_array test_list test_string test_reader test_memory test_logger
 
 build:
 	mkdir build
 
 clean:
 	rm -rf build 2>/dev/null
-
-.PHONY: clean test_array test_list test_string
