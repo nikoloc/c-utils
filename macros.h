@@ -12,6 +12,7 @@
 
 #define container_of(ptr, type, member) (type *)((char *)(ptr) - offsetof(type, member))
 
-#define starts_with(s, t) (strncmp(s, t, strlen(t)))
+#define str_starts_with(s, t) (strncmp(s, t, strlen(t)))
+#define array_lit_len(a) (sizeof(a) / sizeof(a[0]))
 
 #endif

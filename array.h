@@ -10,15 +10,11 @@
 
 #define define_array(type, prefix)                                                                      \
     typedef struct prefix {                                                                             \
-        int len, cap;                                                                                   \
+        size_t len, cap;                                                                                \
         type *data;                                                                                     \
     } prefix##_t;                                                                                       \
                                                                                                         \
-    static inline void prefix##_reserve(prefix##_t *array, int cap) {                                   \
-        if(cap < ARRAY_DEFAULT_CAP) {                                                                   \
-            cap = ARRAY_DEFAULT_CAP;                                                                    \
-        }                                                                                               \
-                                                                                                        \
+    static inline void prefix##_reserve(prefix##_t *array, size_t cap) {                                \
         if(cap <= array->cap) {                                                                         \
             return;                                                                                     \
         }                                                                                               \
@@ -27,7 +23,7 @@
         array->data = realloc(array->data, cap * sizeof(type));                                         \
     }                                                                                                   \
                                                                                                         \
-    static inline void prefix##_init(prefix##_t *array, int len, type value[len]) {                     \
+    static inline void prefix##_init(prefix##_t *array, size_t len, type value[len]) {                  \
         if(len == 0) {                                                                                  \
             memset(array, 0, sizeof(*array));                                                           \
             return;                                                                                     \
@@ -40,7 +36,9 @@
     }                                                                                                   \
                                                                                                         \
     static inline void prefix##_push(prefix##_t *array, type elem) {                                    \
-        if(array->cap == array->len) {                                                                  \
+        if(array->cap == 0) {                                                                           \
+            prefix##_reserve(array, ARRAY_DEFAULT_CAP);                                                 \
+        } else if(array->cap == array->len) {                                                           \
             prefix##_reserve(array, 2 * array->cap);                                                    \
         }                                                                                               \
                                                                                                         \
@@ -48,19 +46,21 @@
         array->len++;                                                                                   \
     }                                                                                                   \
                                                                                                         \
-    static inline void prefix##_remove(prefix##_t *array, int index) {                                  \
+    static inline void prefix##_remove(prefix##_t *array, size_t index) {                               \
         memmove(&array->data[index], &array->data[index + 1], (array->len - index - 1) * sizeof(type)); \
                                                                                                         \
         array->len--;                                                                                   \
     }                                                                                                   \
                                                                                                         \
-    static inline void prefix##_remove_fast(prefix##_t *array, int index) {                             \
+    static inline void prefix##_remove_fast(prefix##_t *array, size_t index) {                          \
         array[index] = array[array->len - 1];                                                           \
         array->len--;                                                                                   \
     }                                                                                                   \
                                                                                                         \
-    static inline void prefix##_insert(prefix##_t *array, int index, type elem) {                       \
-        if(array->cap == array->len) {                                                                  \
+    static inline void prefix##_insert(prefix##_t *array, size_t index, type elem) {                    \
+        if(array->cap == 0) {                                                                           \
+            prefix##_reserve(array, ARRAY_DEFAULT_CAP);                                                 \
+        } else if(array->cap == array->len) {                                                           \
             prefix##_reserve(array, 2 * array->cap);                                                    \
         }                                                                                               \
                                                                                                         \
@@ -73,6 +73,10 @@
         if(array->cap > 0) {                                                                            \
             free(array->data);                                                                          \
         }                                                                                               \
+    }                                                                                                   \
+                                                                                                        \
+    static inline type *prefix##_begin(prefix##_t *array) {                                             \
+        return &array->data[0];                                                                         \
     }                                                                                                   \
                                                                                                         \
     static inline type *prefix##_end(prefix##_t *array) {                                               \

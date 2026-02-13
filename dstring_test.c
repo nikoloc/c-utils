@@ -1,10 +1,7 @@
-// clang-format off
 #include "array.h"
-#define STRING_DEFAULT_CAP 4
-#include "dynamic_string.h"
-// clang-format on
-
-#include <stdio.h>
+#define DSTRING_DEFAULT_CAP 4
+#define DSTRING_IMPLEMENTATION
+#include "dstring.h"
 
 int
 main(void) {
@@ -90,7 +87,6 @@ main(void) {
     assert(arr.len == 8);
     for(int i = 0; i < 8; i++) {
         assert(string_equal_c_string(&arr.data[i], expect2[i]));
-        string_deinit(&arr.data[i]);
     }
 
     // todo: fix the example
@@ -100,7 +96,8 @@ main(void) {
     //     printf("`%s`\n", string_c_string_view(iter));
     //     string_deinit(iter);
     // }
-    //
+
+    string_split_destroy_all(&arr);
     string_array_deinit(&arr);
     string_deinit(&parse);
 

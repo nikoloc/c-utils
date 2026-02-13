@@ -8,10 +8,13 @@ build/array: array_test.c array.h build
 build/list: list_test.c list.h build
 	$(CC) $< $(CFLAGS) -o $@
 
-build/string: dynamic_string_test.c dynamic_string.h build
+build/string: dstring_test.c dstring.h build
 	$(CC) $< $(CFLAGS) -o $@
 
 build/reader: reader_test.c reader.h build
+	$(CC) $< $(CFLAGS) -o $@
+
+build/memory: memory_test.c memory.h build
 	$(CC) $< $(CFLAGS) -o $@
 
 test_array: build/array
@@ -26,7 +29,10 @@ test_string: build/string
 test_reader: build/reader
 	$<
 
-test: test_array test_list test_string test_reader
+test_memory: build/memory
+	$<
+
+test: test_array test_list test_string test_reader test_memory
 
 build:
 	mkdir build

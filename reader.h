@@ -2,7 +2,7 @@
 #define READER_H
 
 // this is a simple reader interface for reading a text file line by line, suitable for usual text parsing needs it
-// depends on the `dynamic_string.h` header, so make sure you include it beforehand
+// depends on the `dstring.h` header, so make sure you include it beforehand
 
 #include <errno.h>
 #include <fcntl.h>
@@ -11,14 +11,22 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-struct reader *
-reader_create(char *path);
+struct reader {
+    int fd;
+
+    ssize_t len;
+    char *buffer;
+    char *cur;
+};
+
+bool
+reader_init(struct reader *reader, char *path);
 
 bool
 reader_read_line(struct reader *reader, string_t *dest);
 
 void
-reader_destroy(struct reader *reader);
+reader_deinit(struct reader *reader);
 
 #endif
 
@@ -27,14 +35,6 @@ reader_destroy(struct reader *reader);
 #ifndef READER_BUFFER_SIZE
 #define READER_BUFFER_SIZE 256
 #endif
-
-struct reader {
-    int fd;
-
-    ssize_t len;
-    char buffer[READER_BUFFER_SIZE];
-    char *cur;
-};
 
 static inline bool
 _read_next(struct reader *reader) {
@@ -45,33 +45,32 @@ _read_next(struct reader *reader) {
     return n > 0;
 }
 
-struct reader *
-reader_create(char *path) {
+bool
+reader_init(struct reader *reader, char *path) {
     int fd = open(path, O_RDONLY | O_CLOEXEC);
     if(fd < 0) {
         goto err;
     }
 
-    struct reader *reader = calloc(1, sizeof(*reader));
-    if(!reader) {
-        goto err_reader;
-    }
-
     reader->fd = fd;
+    reader->buffer = calloc(1, sizeof(char) * READER_BUFFER_SIZE);
+    if(!reader->buffer) {
+        goto err_fd;
+    }
 
     // read initial data
     if(!_read_next(reader)) {
-        goto err_read;
+        goto err_buffer;
     }
 
-    return reader;
+    return true;
 
-err_read:
-    free(reader);
-err_reader:
+err_buffer:
+    free(reader->buffer);
+err_fd:
     close(fd);
 err:
-    return NULL;
+    return false;
 }
 
 bool
@@ -116,9 +115,9 @@ reader_read_line(struct reader *reader, string_t *dest) {
 }
 
 void
-reader_destroy(struct reader *reader) {
+reader_deinit(struct reader *reader) {
     close(reader->fd);
-    free(reader);
+    free(reader->buffer);
 }
 
 #endif
