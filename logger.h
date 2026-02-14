@@ -38,7 +38,6 @@ logger_log(enum log_level level, char *file, int line, char *fmt, ...);
 #define COLOR_ERROR "\x1b[31m"  // Red
 
 // global state
-
 static struct g {
     enum log_level level;
     bool enable_colors;

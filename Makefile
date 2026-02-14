@@ -20,6 +20,9 @@ build/memory: memory_test.c memory.h build
 build/logger: logger_test.c logger.h build
 	$(CC) $< $(CFLAGS) -o $@
 
+build/hashmap: hashmap_test.c hashmap.h build
+	$(CC) $< $(CFLAGS) -o $@
+
 test_array: build/array
 	$<
 
@@ -36,6 +39,9 @@ test_memory: build/memory
 	$<
 
 test_logger: build/logger
+	$<
+
+test_hashmap: build/hashmap
 	$<
 
 test: test_array test_list test_string test_reader test_memory test_logger
