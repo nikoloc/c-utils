@@ -58,15 +58,10 @@ reader_init(struct reader *reader, char *path) {
         goto err_fd;
     }
 
-    // read initial data
-    if(!_read_next(reader)) {
-        goto err_buffer;
-    }
-
+    // read initial data and return
+    _read_next(reader);
     return true;
 
-err_buffer:
-    free(reader->buffer);
 err_fd:
     close(fd);
 err:

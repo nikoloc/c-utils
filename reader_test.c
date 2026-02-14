@@ -1,5 +1,6 @@
 #include <assert.h>
 
+#define DSTRING_IMPLEMENTATION
 #include "dstring.h"
 
 #define READER_BUFFER_SIZE 2
@@ -9,7 +10,18 @@
 int
 main(void) {
     struct reader r;
-    bool success = reader_init(&r, "reader_test_file.txt");
+    bool success = reader_init(&r, "reader_test_not_exists.txt");
+    assert(!success);
+
+    success = reader_init(&r, "reader_test_empty.txt");
+    assert(success);
+
+    string_t s = {0};
+    assert(!reader_read_line(&r, &s));
+
+    reader_deinit(&r);
+
+    success = reader_init(&r, "reader_test_file.txt");
     assert(success);
 
     char *expect[] = {
@@ -23,12 +35,9 @@ main(void) {
             "some other line",
     };
 
-    string_t s = {0};
-
     int i = 0;
     while(reader_read_line(&r, &s)) {
         assert(string_equal_c_string(&s, expect[i]));
-
         i++;
     }
 
