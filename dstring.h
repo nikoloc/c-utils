@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
 
 typedef struct string {
     size_t len, cap;
@@ -152,7 +153,7 @@ string_index_of(string_t *s, char c) {
 
 ssize_t
 string_index_of_from_reverse(string_t *s, char c, ssize_t start) {
-    for(size_t i = start; i >= 0; i--) {
+    for(ssize_t i = start; i >= 0; i--) {
         if(s->data[i] == c) {
             return i;
         }

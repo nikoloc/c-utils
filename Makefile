@@ -44,7 +44,7 @@ test_logger: build/logger
 test_hashmap: build/hashmap
 	$<
 
-test: test_array test_list test_string test_reader test_memory test_logger
+test: test_array test_list test_string test_reader test_memory test_logger test_hashmap
 
 build:
 	mkdir build
