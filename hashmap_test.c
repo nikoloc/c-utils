@@ -6,16 +6,16 @@
 
 // these tests are ai generated
 
-hashmap_define(int, intmap);
-hashmap_define(double, doublemap);
-hashmap_define(char *, strmap);
+DEFINE_HASHMAP(int, intmap);
+DEFINE_HASHMAP(double, doublemap);
+DEFINE_HASHMAP(char *, strmap);
 
 typedef struct {
     int x;
     int y;
 } point_t;
 
-hashmap_define(point_t, pointmap);
+DEFINE_HASHMAP(point_t, pointmap);
 
 void
 test_basic_operations() {

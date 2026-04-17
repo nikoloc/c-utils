@@ -23,6 +23,9 @@ build/logger: logger_test.c logger.h build
 build/hashmap: hashmap_test.c hashmap.h build
 	$(CC) $< $(CFLAGS) -o $@
 
+build/arguments_parser: arguments_parser_test.c arguments_parser.h build
+	$(CC) $< $(CFLAGS) -o $@
+
 test_array: build/array
 	$<
 
@@ -44,7 +47,10 @@ test_logger: build/logger
 test_hashmap: build/hashmap
 	$<
 
-test: test_array test_list test_string test_reader test_memory test_logger test_hashmap
+test_arguments_parser: build/arguments_parser
+	$<
+
+test: test_array test_list test_string test_reader test_memory test_logger test_hashmap test_arguments_parser
 
 build:
 	mkdir build

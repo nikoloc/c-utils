@@ -263,7 +263,7 @@ string_equal_c_string(string_t *a, char *b) {
 
 // only enable this functionality if `array.h` is included
 #ifdef ARRAY_H
-define_array(string_t, string_array);
+DEFINE_ARRAY(string_t, string_array);
 
 void
 string_split(string_t *s, char c, bool ignore_multiple, string_array_t *dest) {

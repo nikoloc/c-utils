@@ -20,7 +20,7 @@ _hash(char *key) {
     return hash;
 }
 
-#define hashmap_define(type, prefix)                                               \
+#define DEFINE_HASHMAP(type, prefix)                                               \
     typedef struct prefix##_entry {                                                \
         char *key;                                                                 \
         type value;                                                                \

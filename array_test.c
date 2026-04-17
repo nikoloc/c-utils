@@ -2,15 +2,15 @@
 
 #include <stdio.h>
 
-define_array(int, int_array);
-define_array(float, float_array);
+DEFINE_ARRAY(int, int_array);
+DEFINE_ARRAY(float, float_array);
 
 struct user {
     char *name;
     char *password;
 };
 
-define_array(struct user, user_array);
+DEFINE_ARRAY(struct user, user_array);
 
 int
 main(int argc, char **argv) {
