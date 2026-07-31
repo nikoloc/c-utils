@@ -1,6 +1,10 @@
 #ifndef READER_H
 #define READER_H
 
+#ifndef DSTRING_H
+#error "no dstring.h found"
+#endif
+
 // this is a simple reader interface for reading a text file line by line, suitable for usual text parsing needs it
 // depends on the `dstring.h` header, so make sure you include it beforehand
 

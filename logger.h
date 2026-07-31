@@ -32,16 +32,16 @@ logger_log(enum log_level level, char *file, int line, char *fmt, ...);
 #include <string.h>
 
 #define COLOR_RESET "\x1b[0m"
-#define COLOR_DEBUG "\x1b[36m"  // Cyan
-#define COLOR_INFO "\x1b[32m"  // Green
-#define COLOR_WARN "\x1b[33m"  // Yellow
-#define COLOR_ERROR "\x1b[31m"  // Red
+#define COLOR_DEBUG "\x1b[36m"  // cyan
+#define COLOR_INFO "\x1b[32m"  // green
+#define COLOR_WARN "\x1b[33m"  // yellow
+#define COLOR_ERROR "\x1b[31m"  // red
 
 // global state
 static struct g {
     enum log_level level;
     bool enable_colors;
-} g;
+} _g;
 
 static const char *names[] = {
         "DEBUG",
@@ -59,8 +59,8 @@ static const char *colors[] = {
 
 void
 logger_init(enum log_level level, bool enable_colors) {
-    g.level = level;
-    g.enable_colors = enable_colors;
+    _g.level = level;
+    _g.enable_colors = enable_colors;
 }
 
 static char *
@@ -79,13 +79,13 @@ get_filename(char *path) {
 
 void
 logger_log(enum log_level level, char *file, int line, char *fmt, ...) {
-    if(level < g.level) {
+    if(level < _g.level) {
         return;
     }
 
     fprintf(stderr, "[%s:%d] ", get_filename(file), line);
 
-    if(g.enable_colors && isatty(STDERR_FILENO)) {
+    if(_g.enable_colors && isatty(STDERR_FILENO)) {
         fprintf(stderr, "%s%s%s ", colors[level], names[level], COLOR_RESET);
     } else {
         fprintf(stderr, "%s ", names[level]);

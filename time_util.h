@@ -14,6 +14,14 @@ time_from_timespec_ns(struct timespec *ts) {
     return (uint64_t)ts->tv_sec * 1000000000 + ts->tv_nsec;
 }
 
+static inline struct timespec
+time_now_timespec(void) {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+
+    return ts;
+}
+
 static inline uint64_t
 time_now_ms(void) {
     struct timespec ts;
